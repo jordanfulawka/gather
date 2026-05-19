@@ -1,12 +1,14 @@
 'use client';
 
 import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -20,6 +22,7 @@ export default function LoginPage() {
 
     if (result.ok) {
       console.log('youre in!');
+      router.push('/lobby');
     } else {
       console.log('incorret');
     }
