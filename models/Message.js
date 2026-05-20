@@ -12,6 +12,10 @@ const messageSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    senderName: {
+      type: String,
+      required: true,
+    },
     content: {
       type: String,
       required: true,
@@ -20,4 +24,5 @@ const messageSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-export const Message = mongoose.model('Message', messageSchema);
+export const Message =
+  mongoose.models.Message || mongoose.model('Message', messageSchema);

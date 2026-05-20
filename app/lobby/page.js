@@ -7,7 +7,6 @@ export default function LobbyPage() {
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [rooms, setRooms] = useState([]);
-
   useEffect(() => {
     async function getRooms() {
       const rooms = await fetch('/api/rooms');

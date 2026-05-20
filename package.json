@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node server.js",
+    "dev": "node  --env-file=.env.local server.js",
     "build": "next build",
     "start": "NODE_ENV=production node server.js",
     "lint": "eslint"
@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/react": "19.2.15",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4"
