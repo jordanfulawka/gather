@@ -7,18 +7,26 @@ export default function CreateRoomModal({ onClose, onRoomCreated }) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [roomCreated, setRoomCreated] = useState(false);
+  const [error, setError] = useState(null);
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const response = await fetch(`/api/rooms`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, description }),
-    });
-    const data = await response.json();
-    setInviteCode(data.inviteCode);
-    setRoomCreated(true);
-    onRoomCreated();
+    try {
+      const response = await fetch(`/api/rooms`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, description }),
+      });
+      if (!response.ok) {
+        throw new Error();
+      }
+      const data = await response.json();
+      setInviteCode(data.inviteCode);
+      setRoomCreated(true);
+      onRoomCreated();
+    } catch (error) {
+      setError('Could not create room');
+    }
   }
 
   return (
@@ -50,6 +58,7 @@ export default function CreateRoomModal({ onClose, onRoomCreated }) {
             onChange={(e) => setDescription(e.target.value)}
             className='w-full px-3 py-2 bg-[#0F0F1A] border border-[#2D2D44] rounded-md text-[#F8FAFC] placeholder-[#94A3B8] focus:outline-none focus:border-[#7C3AED]'
           />
+          {error && <p className='text-red-400 text-sm'>{error}</p>}
           <div className='flex gap-2 justify-end pt-2'>
             <button
               type='button'

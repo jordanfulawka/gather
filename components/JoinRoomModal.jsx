@@ -10,22 +10,24 @@ export default function JoinRoomModal({ onClose, onRoomJoined }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    try {
+      const response = await fetch(`/api/rooms/join`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ inviteCode }),
+      });
 
-    const response = await fetch(`/api/rooms/join`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ inviteCode }),
-    });
+      if (!response.ok) {
+        throw new Error();
+      }
 
-    if (!response.ok) {
-      setError('Error joining room');
-      return;
+      const data = await response.json();
+      router.push(`/rooms/${data._id}`);
+      onRoomJoined();
+      onClose();
+    } catch (error) {
+      setError('Could not join room!');
     }
-
-    const data = await response.json();
-    router.push(`/rooms/${data._id}`);
-    onRoomJoined();
-    onClose();
   }
 
   return (
@@ -50,6 +52,7 @@ export default function JoinRoomModal({ onClose, onRoomJoined }) {
             required
             className='w-full px-3 py-2 bg-[#0F0F1A] border border-[#2D2D44] rounded-md text-[#F8FAFC] placeholder-[#94A3B8] focus:outline-none focus:border-[#7C3AED]'
           />
+          {error && <p className='text-red-400 text-sm'>{error}</p>}
           <div className='flex gap-2 justify-end pt-2'>
             <button
               type='button'
@@ -65,7 +68,6 @@ export default function JoinRoomModal({ onClose, onRoomJoined }) {
               Join
             </button>
           </div>
-          {error && <p className='text-red-400 text-sm'>{error}</p>}
         </form>
       </div>
     </div>

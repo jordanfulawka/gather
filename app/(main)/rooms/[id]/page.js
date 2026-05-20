@@ -9,6 +9,8 @@ export default function RoomPage() {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [room, setRoom] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const params = useParams();
   const session = useSession();
   const ref = useRef();
@@ -46,24 +48,36 @@ export default function RoomPage() {
 
   useEffect(() => {
     async function getRoomAndMessages() {
-      const [roomResult, messagesResult] = await Promise.all([
-        fetch(`/api/rooms/${params.id}`),
-        fetch(`/api/rooms/${params.id}/messages`),
-      ]);
+      try {
+        const [roomResult, messagesResult] = await Promise.all([
+          fetch(`/api/rooms/${params.id}`),
+          fetch(`/api/rooms/${params.id}/messages`),
+        ]);
 
-      const [roomData, messagesData] = await Promise.all([
-        roomResult.json(),
-        messagesResult.json(),
-      ]);
+        if (!roomResult.ok || !messagesResult.ok) {
+          throw new Error();
+        }
 
-      setRoom(roomData);
-      setMessages(messagesData);
+        const [roomData, messagesData] = await Promise.all([
+          roomResult.json(),
+          messagesResult.json(),
+        ]);
+
+        setRoom(roomData);
+        setMessages(messagesData);
+      } catch (error) {
+        setError('Could not load room!');
+      } finally {
+        setLoading(false);
+      }
     }
     getRoomAndMessages();
   }, []);
 
   useEffect(() => {
-    ref.current.scrollIntoView();
+    if (ref.current) {
+      ref.current.scrollIntoView();
+    }
   }, [messages]);
 
   return (
@@ -74,20 +88,26 @@ export default function RoomPage() {
       </div>
 
       <div className='flex-1 overflow-y-auto'>
-        {messages.map((message) => (
-          <div key={message._id} className='flex justify-between'>
-            <div>
-              <span>{message.senderName}: </span>
-              <span>{message.content}</span>
+        {loading && (
+          <p className='text-[#94A3B8] text-sm'>Loading messages...</p>
+        )}
+        {error && <p className='text-red-400 text-sm'>{error}</p>}
+        {!loading &&
+          !error &&
+          messages.map((message) => (
+            <div key={message._id} className='flex justify-between'>
+              <div>
+                <span>{message.senderName}: </span>
+                <span>{message.content}</span>
+              </div>
+              <div>
+                {new Date(message.createdAt).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </div>
             </div>
-            <div>
-              {new Date(message.createdAt).toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
-            </div>
-          </div>
-        ))}
+          ))}
         <div ref={ref} />
       </div>
 

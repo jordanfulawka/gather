@@ -10,12 +10,23 @@ export default function Sidebar() {
   const [rooms, setRooms] = useState(null);
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   async function getRooms() {
-    const response = await fetch(`/api/rooms`);
-    const data = await response.json();
-    setRooms(data);
-    console.log(data);
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/rooms`);
+      if (!response.ok) {
+        throw new Error();
+      }
+      const data = await response.json();
+      setRooms(data);
+    } catch (error) {
+      setError('Could not load rooms!');
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -33,16 +44,20 @@ export default function Sidebar() {
           Your Rooms
         </p>
         <ul className='space-y-1'>
-          {rooms?.map((room) => (
-            <li key={room._id}>
-              <Link
-                href={`/rooms/${room._id}`}
-                className='block px-3 py-2 rounded-md text-[#F8FAFC] hover:bg-[#7C3AED] transition-colors'
-              >
-                {room.name}
-              </Link>
-            </li>
-          ))}
+          {loading && <p className='text-[#94A3B8] text-sm px-2'>Loading...</p>}
+          {error && <p className='text-red-400 text-sm px-2'>{error}</p>}
+          {!loading &&
+            !error &&
+            rooms?.map((room) => (
+              <li key={room._id}>
+                <Link
+                  href={`/rooms/${room._id}`}
+                  className='block px-3 py-2 rounded-md text-[#F8FAFC] hover:bg-[#7C3AED] transition-colors'
+                >
+                  {room.name}
+                </Link>
+              </li>
+            ))}
         </ul>
       </nav>
       {showJoinModal && (
