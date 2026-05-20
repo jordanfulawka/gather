@@ -2,17 +2,22 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import JoinRoomModal from './JoinRoomModal';
+import CreateRoomModal from './CreateRoomModal';
 
 export default function Sidebar() {
   const [rooms, setRooms] = useState(null);
+  const [showJoinModal, setShowJoinModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
+  async function getRooms() {
+    const response = await fetch(`/api/rooms`);
+    const data = await response.json();
+    setRooms(data);
+    console.log(data);
+  }
 
   useEffect(() => {
-    async function getRooms() {
-      const response = await fetch(`/api/rooms`);
-      const data = await response.json();
-      setRooms(data);
-      console.log(data);
-    }
     getRooms();
   }, []);
 
@@ -39,15 +44,29 @@ export default function Sidebar() {
           ))}
         </ul>
       </nav>
+      {showJoinModal && (
+        <JoinRoomModal
+          onRoomJoined={getRooms}
+          onClose={() => setShowJoinModal(false)}
+        />
+      )}
+      {showCreateModal && (
+        <CreateRoomModal
+          onRoomCreated={getRooms}
+          onClose={() => setShowCreateModal(false)}
+        />
+      )}
 
       <div className='px-3 py-4 border-t border-[#2D2D44] space-y-2'>
         <button
+          onClick={() => setShowCreateModal(true)}
           className='w-full px-3 py-2 rounded-md bg-[#7C3AED] hover:bg-[#6D28D9] text-[#F8FAFC] text-sm
   font-medium transition-colors'
         >
           Create Room
         </button>
         <button
+          onClick={() => setShowJoinModal(true)}
           className='w-full px-3 py-2 rounded-md border border-[#2D2D44] text-[#94A3B8] hover:text-[#F8FAFC]
   text-sm transition-colors'
         >

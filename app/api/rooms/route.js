@@ -27,10 +27,13 @@ export async function POST(request) {
   const body = await request.json();
   const { name, description } = body;
 
+  const inviteCode = Math.random().toString(36).substring(2, 10).toUpperCase();
+
   await dbConnect();
   const newRoom = {
     name,
     description,
+    inviteCode,
     createdBy: session.user.id,
     members: [session.user.id],
   };
