@@ -3,7 +3,7 @@
 import { useSocket } from '@/context/SocketContext';
 import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function RoomPage() {
   const [input, setInput] = useState('');
@@ -11,6 +11,7 @@ export default function RoomPage() {
   const [room, setRoom] = useState(null);
   const params = useParams();
   const session = useSession();
+  const ref = useRef();
 
   const socket = useSocket();
 
@@ -56,17 +57,22 @@ export default function RoomPage() {
     getRoomAndMessages();
   }, []);
 
+  useEffect(() => {
+    ref.current.scrollIntoView();
+  }, [messages]);
+
   return (
-    <div>
+    <div className='flex flex-col h-full'>
       <h1>Room Name: {room?.name}</h1>
 
-      <div>
+      <div className='flex-1 overflow-y-auto'>
         {messages.map((message) => (
           <div key={message._id}>
             <span>{message.senderName}: </span>
             <span>{message.content}</span>
           </div>
         ))}
+        <div ref={ref} />
       </div>
 
       <form onSubmit={handleSubmit}>

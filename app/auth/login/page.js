@@ -22,7 +22,7 @@ export default function LoginPage() {
 
     if (result.ok) {
       console.log('youre in!');
-      router.push('/lobby');
+      router.push('/rooms');
     } else {
       console.log('incorret');
     }
