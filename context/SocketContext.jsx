@@ -9,9 +9,10 @@ export function SocketProvider({ children }) {
   const [socket, setSocket] = useState();
 
   useEffect(() => {
-    setSocket(io(process.env.NEXT_PUBLIC_API_URL));
+    const newSocket = io(process.env.NEXT_PUBLIC_API_URL);
+    setSocket(newSocket);
 
-    return () => socket?.disconnect();
+    return () => newSocket.disconnect();
   }, []);
 
   return (
