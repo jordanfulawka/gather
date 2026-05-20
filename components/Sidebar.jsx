@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import JoinRoomModal from './JoinRoomModal';
 import CreateRoomModal from './CreateRoomModal';
+import { signOut } from 'next-auth/react';
 
 export default function Sidebar() {
   const [rooms, setRooms] = useState(null);
@@ -71,6 +72,13 @@ export default function Sidebar() {
   text-sm transition-colors'
         >
           Join Room
+        </button>
+        <button
+          onClick={() => signOut({ callbackUrl: '/auth/login' })}
+          className='w-full px-3 py-2 rounded-md border border-[#2D2D44] text-[#94A3B8] hover:text-[#F8FAFC] text-sm
+  transition-colors'
+        >
+          Logout
         </button>
       </div>
     </aside>

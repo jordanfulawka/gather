@@ -29,10 +29,15 @@ export default function RoomPage() {
   }
 
   useEffect(() => {
+    if (!socket) return;
+
     socket?.on('receive_message', (data) => {
-      console.log('received');
       setMessages((messages) => [...messages, data]);
     });
+
+    return () => {
+      socket.off('receive_message');
+    };
   }, [socket]);
 
   useEffect(() => {
@@ -63,13 +68,24 @@ export default function RoomPage() {
 
   return (
     <div className='flex flex-col h-full'>
-      <h1>Room Name: {room?.name}</h1>
+      <div className='flex justify-between'>
+        <h1>Room Name: {room?.name}</h1>
+        <h1>Invite Code: {room?.inviteCode}</h1>
+      </div>
 
       <div className='flex-1 overflow-y-auto'>
         {messages.map((message) => (
-          <div key={message._id}>
-            <span>{message.senderName}: </span>
-            <span>{message.content}</span>
+          <div key={message._id} className='flex justify-between'>
+            <div>
+              <span>{message.senderName}: </span>
+              <span>{message.content}</span>
+            </div>
+            <div>
+              {new Date(message.createdAt).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </div>
           </div>
         ))}
         <div ref={ref} />

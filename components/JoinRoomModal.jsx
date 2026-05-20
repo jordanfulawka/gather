@@ -1,6 +1,33 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+
 export default function JoinRoomModal({ onClose, onRoomJoined }) {
+  const [inviteCode, setInviteCode] = useState('');
+  const router = useRouter();
+  const [error, setError] = useState('');
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    const response = await fetch(`/api/rooms/join`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ inviteCode }),
+    });
+
+    if (!response.ok) {
+      setError('Error joining room');
+      return;
+    }
+
+    const data = await response.json();
+    router.push(`/rooms/${data._id}`);
+    onRoomJoined();
+    onClose();
+  }
+
   return (
     <div
       className='fixed inset-0 bg-black/50 flex justify-center items-center z-50'
@@ -14,10 +41,12 @@ export default function JoinRoomModal({ onClose, onRoomJoined }) {
           Join a Room
         </h2>
 
-        <form className='space-y-3'>
+        <form className='space-y-3' onSubmit={handleSubmit}>
           <input
             type='text'
             placeholder='Enter invite code'
+            value={inviteCode}
+            onChange={(e) => setInviteCode(e.target.value)}
             required
             className='w-full px-3 py-2 bg-[#0F0F1A] border border-[#2D2D44] rounded-md text-[#F8FAFC] placeholder-[#94A3B8] focus:outline-none focus:border-[#7C3AED]'
           />
@@ -36,6 +65,7 @@ export default function JoinRoomModal({ onClose, onRoomJoined }) {
               Join
             </button>
           </div>
+          {error && <p className='text-red-400 text-sm'>{error}</p>}
         </form>
       </div>
     </div>
