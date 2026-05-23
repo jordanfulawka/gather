@@ -24,5 +24,7 @@ const messageSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+messageSchema.index({ roomId: 1, createdAt: 1 });
+
 export const Message =
   mongoose.models.Message || mongoose.model('Message', messageSchema);

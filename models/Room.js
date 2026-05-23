@@ -31,4 +31,6 @@ const roomSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+roomSchema.index({ inviteCode: 1 });
+
 export const Room = mongoose.models.Room || mongoose.model('Room', roomSchema);

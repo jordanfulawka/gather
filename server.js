@@ -29,6 +29,10 @@ app.prepare().then(async () => {
     socket.on('join-room', (roomId) => {
       socket.join(roomId);
     });
+
+    socket.on('leave-room', (roomId) => {
+      socket.leave(roomId);
+    });
   });
 
   httpServer

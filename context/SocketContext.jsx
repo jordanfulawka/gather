@@ -9,7 +9,12 @@ export function SocketProvider({ children }) {
   const [socket, setSocket] = useState();
 
   useEffect(() => {
-    const newSocket = io(process.env.NEXT_PUBLIC_API_URL);
+    const newSocket = io(process.env.NEXT_PUBLIC_API_URL, {
+      reconnect: true,
+      reconnectionAttemps: 5,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+    });
     setSocket(newSocket);
 
     return () => newSocket.disconnect();

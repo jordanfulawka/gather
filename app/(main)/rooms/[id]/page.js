@@ -33,18 +33,21 @@ export default function RoomPage() {
   useEffect(() => {
     if (!socket) return;
 
-    socket?.on('receive_message', (data) => {
+    socket.emit('join-room', params.id);
+    socket.on('receive_message', (data) => {
       setMessages((messages) => [...messages, data]);
+    });
+
+    socket.on('reconnect', () => {
+      socket.emit('join-room', params.id);
     });
 
     return () => {
       socket.off('receive_message');
+      socket.off('reconnect');
+      socket.emit('leave-room', params.id);
     };
-  }, [socket]);
-
-  useEffect(() => {
-    socket?.emit('join-room', params.id);
-  }, [socket]);
+  }, [socket, params.id]);
 
   useEffect(() => {
     async function getRoomAndMessages() {

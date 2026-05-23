@@ -5,8 +5,10 @@ import { useEffect, useState } from 'react';
 import JoinRoomModal from './JoinRoomModal';
 import CreateRoomModal from './CreateRoomModal';
 import { signOut } from 'next-auth/react';
+import { usePathname } from 'next/navigation';
 
 export default function Sidebar() {
+  const pathname = usePathname();
   const [rooms, setRooms] = useState(null);
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -48,16 +50,19 @@ export default function Sidebar() {
           {error && <p className='text-red-400 text-sm px-2'>{error}</p>}
           {!loading &&
             !error &&
-            rooms?.map((room) => (
-              <li key={room._id}>
-                <Link
-                  href={`/rooms/${room._id}`}
-                  className='block px-3 py-2 rounded-md text-[#F8FAFC] hover:bg-[#7C3AED] transition-colors'
-                >
-                  {room.name}
-                </Link>
-              </li>
-            ))}
+            rooms?.map((room) => {
+              const isActive = pathname === `/rooms/${room._id}`;
+              return (
+                <li key={room._id}>
+                  <Link
+                    href={`/rooms/${room._id}`}
+                    className={`block px-3 py-2 rounded-md text-[#F8FAFC] transition-colors ${isActive ? 'bg-[#7C3AED]' : 'hover:bg-[#7C3AED]'}`}
+                  >
+                    {room.name}
+                  </Link>
+                </li>
+              );
+            })}
         </ul>
       </nav>
       {showJoinModal && (
